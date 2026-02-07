@@ -8,10 +8,37 @@ const app = express();
 app.use(cors()); // Permite que o Front-end acesse a API
 app.use(express.json()); // Permite que a API entenda JSON
 
-// Rota de teste
-app.get('/', (req, res) => {
-    res.send('API do LeadTrack rodando com sucesso!');
+let leads = [ {
+    id: 1,
+    nome: "Cliente teste",
+    email:"teste@gmail.com",
+    whatsapp: "11999999999", 
+    status: "Pendente"}
+];
+// Rota 1: Listar todos os leads (O Dashboard vai usar essa)
+app.get('/leads', (req, res) => {
+    res.send(leads);
 });
+// Rota 2: Receber novo lead (O Formulário vai usar essa)
+app.post('/leads', (req, res)=>{
+    const {nome, email, whatsapp}= req.body;
+    // Validação
+    if(!nome || !email || !whatsapp){
+    return res.status(400).json({error:"Todos os campos são obrigatórios."});
+ }
+
+const novoLead = {
+        id: leads.length + 1,
+        nome,
+        email,
+        whatsapp,
+        status: "Pendente"
+    };
+
+    leads.push(novoLead);
+    console.log("Novo lead recebido:", novoLead);
+    res.status(201).json(novoLead);
+});   
 
 // Porta do servidor
 const PORT = process.env.PORT || 5000;

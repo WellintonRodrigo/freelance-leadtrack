@@ -25,21 +25,26 @@ Este é um sistema de gerenciamento de leads desenvolvido para um projeto de fre
 ## 🔧 Como Rodar o Projeto
 
 1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/WellintonRodrigo/freelance-leadtrack
+    https://github.com/WellintonRodrigo/freelance-leadtrack
 
-   .Configurando o Backend:
+Siga os passos abaixo para configurar o ambiente local.
 
-'cd backend'
-'npm install'
-'node server.js'
+---
 
-.O banco de dados SQLite será criado automaticamente na primeira execução.
-
-.Configurando o Frontend:
-
-'cd ../frontend'
-'npm install'
-'npm run dev'
+### 🔙 1. Configurando o Backend
+Entre na pasta do servidor e instale as dependências:
+```bash
+cd backend
+npm install
+node server.js
+```
+O banco de dados SQLite será criado automaticamente na primeira execução.
+### 💻 2. Configurando o Frontend
+Abra um novo terminal e inicie o Vite:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ## Este projeto está sob a licença MIT.

@@ -1,6 +1,8 @@
 const Joi= require('joi')
 const express = require('express');
+const db = require('./db')
 const cors = require('cors');
+const e = require('express');
 require('dotenv').config();
 
 const app = express();
@@ -9,78 +11,79 @@ const app = express();
 app.use(cors()); // Permite que o Front-end acesse a API
 app.use(express.json()); // Permite que a API entenda JSON
 
-let leads = [ {
-    id: 1,
-    nome: "Cliente teste",
-    email:"teste@gmail.com",
-    whatsapp: "11999999999", 
-    status: "Pendente"}
-];
+
+
 // Rota 1: Listar todos os leads (O Dashboard vai usar essa)
-app.get('/leads', (req, res) => {
-    res.send(leads);
+app.get('/leads', async (req, res) => {
+
+    try{
+        const leads = await db('leads').select('*');
+        res.json(leads);
+    } catch(error){
+        console.error("Erro ao listar os leads:", error);
+        res.status(500).json({error: "Erro os buscar dados"})
+    }
 });
 // Rota 2: Receber novo lead (O Formulário vai usar essa)
-app.post('/leads', (req, res)=>{
+app.post('/leads', async (req, res) => {
+    try {
+        // 1. Pegamos os dados PRIMEIRO
+        const { nome, email, whatsapp } = req.body;
 
-    // Validação
-   const schema = Joi.object({
-        nome: Joi.string().min(3).required(),
-        email: Joi.string().email().required(),
-        whatsapp: Joi.string().min(10).required()
-   });
+        // 2. Verificamos se eles existem (evita erros de undefined)
+        if (!nome || !email) {
+            return res.status(400).json({ error: "Nome e Email são obrigatórios" });
+        }
 
-const {error} = schema.validate(req.body);
+        // 3. Salvamos no banco usando o db.
+        const [id] = await db('leads').insert({ 
+            nome, 
+            email, 
+            whatsapp, 
+            status: 'Pendente' 
+        });
 
-if(error){
-    return res.status(404).json({error: error.details[0].message});
-}
-const {nome, email, whatsapp}=req.body;
-
-const novoLead = {
-        id: leads.length + 1,
-        nome,
-        email,
-        whatsapp,
-        status: "Pendente"
-    };
-
-    leads.push(novoLead);
-    console.log("Novo lead recebido:", novoLead);
-    res.status(201).json(novoLead);
+        res.status(201).json({ id, nome, email, whatsapp, status: 'Pendente' });
+    } catch (error) {
+        console.error("Erro no servidor:", error);
+        res.status(500).json({ error: "Erro ao cadastrar no banco" });
+    }
 });
 
 // Rota 3: Editar Status do Lead
 
-app.patch('/leads/:id', (req, res)=>{
-    const {id} = req.params
+app.patch('/leads/:id', async (req, res)=>{
+   try{
+    const {id} = req.params;
     const {status} = req.body
 
-    const leadIndex =leads.findIndex(l=>l.id===parseInt(id))
+    const atualizado = await db('leads').where({id}).update({status});
 
-    if(leadIndex === -1){
-        return res.status(404).json({ error: "Lead não encontrado"});
+    if(!atualizado){
+        return res.status(404).json({error:"Lead não encontrado no banco"});
     }
-    // Atualiza apenas o status
-    leads[leadIndex].status = status || leads[leadIndex].status;
+    res.json({messge:"Status atualizado com sucesso!"});
 
-    console.log(`Lead ${id} atualizado para: ${leads[leadIndex].status}`);
-    res.json(leads[leadIndex]);
+    } catch(error){
+        res.status(500).json({ error: "Erro ao atualizar no banco" });
+    }
 });
 
 // Rota 4: Deletar Lead
-app.delete('/leads/:id', (req, res) => {
+app.delete('/leads/:id', async (req, res) => {
+try{
     const { id } = req.params;
-    const initialLength = leads.length;
-    
-    leads = leads.filter(l => l.id !== parseInt(id));
 
-    if (leads.length === initialLength) {
-        return res.status(404).json({ error: "Lead não encontrado para exclusão." });
+    const deletado = await db('leads').where({ id }).delete();
+
+        if (!deletado) {
+            return res.status(404).json({ error: "Lead não encontrado" });
+        }
+        res.status(204).send(); // Sucesso sem conteúdo
+
+    } catch (error) {
+        res.status(500).json({ error: "Erro ao excluir do banco" });
     }
-
-    console.log(`Lead ${id} removido.`);
-    res.status(204).send(); // 204 significa "Sucesso, mas sem conteúdo para retornar"
 });
 
 // Porta do servidor

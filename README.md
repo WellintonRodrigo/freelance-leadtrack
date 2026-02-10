@@ -1,6 +1,6 @@
 # 🚀 Gerenciador de Leads - Fullstack
 
-Este é um sistema de gerenciamento de leads desenvolvido para um projeto de freelance. Ele permite cadastrar, listar, atualizar o status e excluir leads de forma simples e eficiente.
+Este é um sistema de gerenciamento de leads, ele permite cadastrar, listar, atualizar o status e excluir leads de forma simples e eficiente.
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -15,6 +15,9 @@ Este é um sistema de gerenciamento de leads desenvolvido para um projeto de fre
 * **Vite**: Ferramenta de build rápida.
 * **Axios**: Para consumo da API.
 * **Lucide React**: Biblioteca de ícones (Check, Trash, etc).
+*  **Dashboard de Estatísticas**: Cards com contagem automática de leads totais, pendentes e finalizados.
+*  **Conexão Direta WhatsApp**: Clique no número para abrir a conversa instantaneamente com o código do país automático.
+*  **Notificações Toast**: Feedback visual elegante para cada ação (cadastro, atualização e exclusão).
 
 ## 📋 Funcionalidades
 - [x] Cadastro de leads (Nome, Email, WhatsApp).

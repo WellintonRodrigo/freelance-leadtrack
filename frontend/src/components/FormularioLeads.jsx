@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../services/api";
+import { toast } from "react-toastify";
 
 export function FormularioLeads({carregarLeads}) {
     const [nome, setNome] = useState("");
@@ -8,13 +9,20 @@ export function FormularioLeads({carregarLeads}) {
 
 
 async function handleSubmit(e) {
-    e.preventDefault();
+  try{  
+  e.preventDefault();
     await api.post('/leads',{nome,email,whatsapp});
-
+    toast.success('Novo lead cadastrado!');
+    
     setNome('');
     setEmail('');
     setWhatsapp('');
     carregarLeads();
+  } catch (error) {
+    const mgserro = error.response?.data?.error;
+    toast.error(`Erro ao cadastrar lead: ${mgserro}`);
+  }
+
 }
   
 return (

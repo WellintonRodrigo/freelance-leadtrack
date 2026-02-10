@@ -4,6 +4,9 @@ import { CheckCircle, Trash2, User } from 'lucide-react';
 import { ResumoCards } from './components/ResumoCards';
 import { TabelaLeads } from './components/TabelaLeads';
 import { FormularioLeads } from './components/FormularioLeads';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 function App() {
   const [leads, setLeads] = useState([]);
@@ -25,12 +28,13 @@ function App() {
 const handleStatus = async (id) => {
   try {
     await api.patch(`/leads/${id}`, { status: "Finalizado" });
+    toast.info("Status atualizado!");
     carregarLeads(); // Atualiza a tabela com o novo status
   } catch (error) {
     
     const msgErrStatus = error.response?.data?.error;
 
-    alert(`Erro ao atualizar status: ${msgErrStatus}`);
+    toast.error(`Erro ao atualizar status: ${msgErrStatus}`);
   }
 };
 
@@ -39,6 +43,7 @@ const handleDelete = async (id) => {
   if (window.confirm("Deseja realmente excluir este lead?")) {
     try {
       await api.delete(`/leads/${id}`);
+      toast.warn('Lead removido!');
       carregarLeads(); // Recarrega a lista automaticamente
     } catch (error) {
 
@@ -67,6 +72,8 @@ const handleDelete = async (id) => {
      <FormularioLeads carregarLeads={carregarLeads} />
 
      <TabelaLeads leads={leads} handleStatus={handleStatus} handleDelete={handleDelete} />
+
+     <ToastContainer position='bottom-right' theme='dark' />
     </>
   );
 }

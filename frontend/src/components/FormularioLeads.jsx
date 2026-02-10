@@ -26,12 +26,27 @@ async function handleSubmit(e) {
 }
   
 return (
-    <form onSubmit={handleSubmit} style={formStyle}>
-      <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} required />
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-      <input placeholder="WhatsApp" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} required />
-      <button type="submit">Cadastrar Lead</button>
-    </form>
+  
+    <section className="bg-slate-900/40 p-6 rounded-xl border border-slate-800 mb-8">
+      <h2 className="text-lg font-semibold mb-4 text-slate-300">Novo Cadastro</h2>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input 
+          className="bg-slate-800 border border-slate-700 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} required 
+        />
+        <input 
+          className="bg-slate-800 border border-slate-700 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required 
+        />
+        <input 
+          className="bg-slate-800 border border-slate-700 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+          placeholder="WhatsApp" value={whatsapp} onChange={e => setWhatsapp(e.target.value)} required 
+        />
+        <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg transition-colors cursor-pointer">
+          Cadastrar Lead
+        </button>
+      </form>
+    </section>
+  
   );
 }
-const formStyle = {display:'flex', gap:'10px', marginBttom:'30px'}

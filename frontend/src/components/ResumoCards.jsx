@@ -7,31 +7,19 @@ export function ResumoCards({ leads }) {
   const finalizados = leads.filter(l => l.status === 'Finalizado').length;
 
   return (
-    <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
-      <div style={cardStyle}>
-        <h3>Total</h3>
-        <p style={{ fontSize: '24px', margin: 0 }}>{totalLeads}</p>
+  <div className="grid grid-cols-1 gap-6 md:grid-cols-3 mb-10">
+      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 shadow-sm">
+        <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">Total</p>
+        <p className="mt-2 text-3xl font-bold text-white">{totalLeads}</p>
       </div>
-      
-      <div style={{ ...cardStyle, borderLeft: '5px solid #854d0e' }}>
-        <h3>Pendentes</h3>
-        <p style={{ fontSize: '24px', margin: 0, color: '#854d0e' }}>{pendentes}</p>
+      <div className="rounded-xl border-l-4 border-l-amber-500 border border-slate-800 bg-slate-900/50 p-6 shadow-sm">
+        <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">Pendentes</p>
+        <p className="mt-2 text-3xl font-bold text-amber-500">{pendentes}</p>
       </div>
-
-      <div style={{ ...cardStyle, borderLeft: '5px solid #166534' }}>
-        <h3>Finalizados</h3>
-        <p style={{ fontSize: '24px', margin: 0, color: '#166534' }}>{finalizados}</p>
+      <div className="rounded-xl border-l-4 border-l-green-500 border border-slate-800 bg-slate-900/50 p-6 shadow-sm">
+        <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">Finalizados</p>
+        <p className="mt-2 text-3xl font-bold text-green-500">{finalizados}</p>
       </div>
     </div>
   );
 }
-
-// Estilo básico para os cards
-const cardStyle = {
-  backgroundColor: '#1e1e1e',
-  padding: '15px 25px',
-  borderRadius: '8px',
-  flex: 1,
-  boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-  color: '#fff'
-};

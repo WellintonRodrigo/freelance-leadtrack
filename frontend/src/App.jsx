@@ -8,6 +8,7 @@ import { ResumoCards } from './components/ResumoCards';
 import { TabelaLeads } from './components/TabelaLeads';
 import { FormularioLeads } from './components/FormularioLeads';
 import { Busca } from './components/Busca';
+import { Login } from './Login';
 
 
 function App() {
@@ -15,6 +16,8 @@ function App() {
   const [filtro, setFiltro] = useState('');
   const [isOnline, setIsOnline] = useState(false);
   const erroNotificado = useRef(false);
+  const [logado, setLogado] = useState(false);
+
 
 
 async function checkServer() {
@@ -81,11 +84,25 @@ async function handleDelete(id){
     const fetchLeads = async () => {
       await checkServer();
       const interval = setInterval(checkServer, 10000);
+      const token = localStorage.getItem('token');
+      if (token) {
+        setLogado(true);
+      }
     await carregarLeads();
     return () => clearInterval(interval);
     };
     fetchLeads();
   }, []);
+
+  function handleLogout(){
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setLogado(false);
+  };
+
+  if(!logado){
+    return <Login onLoginSuccess={()=> setLogado(true)}/>;
+  }
 
   //Lógica de Filtro: Criamos uma nova lista baseada no que foi digitado
 
@@ -108,6 +125,9 @@ async function handleDelete(id){
 }`}>
           Sistema {isOnline? 'Online ' : 'Offline'}
         </span>
+
+        <button  onClick={handleLogout} className="bg-slate-800 hover:bg-red-500/20 hover:text-red-400 px-4 py-2 rounded-lg transition-all text-sm font-medium cursor-pointer"> Sair</button>
+
       </header>
      <ResumoCards leads={leads} />
 

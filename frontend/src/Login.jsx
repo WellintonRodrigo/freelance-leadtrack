@@ -5,9 +5,12 @@ import { toast } from 'react-toastify';
 export function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
   async function handleLogin(e) {
     e.preventDefault();
+    setCarregando(true);
+
     try {
       const response = await api.post('/login', { email, senha });
       const { token, user } = response.data;
@@ -50,8 +53,21 @@ export function Login({ onLoginSuccess }) {
               required
             />
           </div>
-          <button className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-all mt-4 cursor-pointer">
-            Entrar
+          <button 
+            disabled={carregando} // Bloqueia o botão durante o carregamento
+            className={`w-full font-bold py-3 rounded-lg transition-all mt-4 flex items-center justify-center gap-2 ${carregando 
+                ? "bg-slate-700 cursor-not-allowed text-slate-400" 
+                : "bg-blue-600 hover:bg-blue-500 text-white cursor-pointer"
+            }`}
+          >
+            {carregando ? (
+              <>
+                <div className="w-5 h-5 border-2 border-slate-400 border-t-white rounded-full animate-spin"></div>
+                Autenticando...
+              </>
+            ) : (
+              "Entrar"
+            )}
           </button>
         </form>
       </div>

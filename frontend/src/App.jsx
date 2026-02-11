@@ -17,6 +17,8 @@ function App() {
   const [isOnline, setIsOnline] = useState(false);
   const erroNotificado = useRef(false);
   const [logado, setLogado] = useState(false);
+  const [usuario, setUsuario] = useState(null);
+  
 
 
 
@@ -85,8 +87,11 @@ async function handleDelete(id){
       await checkServer();
       const interval = setInterval(checkServer, 10000);
       const token = localStorage.getItem('token');
-      if (token) {
+      const userStorag = localStorage.getItem('user');
+      
+      if (token && userStorag) {
         setLogado(true);
+        setUsuario(JSON.parse(userStorag));
       }
     await carregarLeads();
     return () => clearInterval(interval);
@@ -95,6 +100,7 @@ async function handleDelete(id){
   }, []);
 
   function handleLogout(){
+    localStorage.clear
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setLogado(false);
@@ -117,6 +123,18 @@ async function handleDelete(id){
      <div className='min-h-screen bg-slate-950 p8 text-slate-100'>
       <div className='mx-auto max-w-6xl'>
         <header className='mb-10 flex items-center justify-between'> 
+        <div className="flex items-center gap-4">
+          {/* Avatar com a inicial do nome */}
+          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
+            {usuario?.nome?.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white tracking-tight">Olá, {usuario?.nome}!</h1>
+            <p className="text-slate-500 text-xs">Bem-vindo ao LeadTrack</p>
+          </div>
+        </div>
+
+
       <h1 className="text-4xl font-bold text-green-500 uppercase">
         Dashboard de Leads
         </h1>

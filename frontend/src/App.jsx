@@ -34,7 +34,7 @@ async function checkServer() {
 }
 
   // Função para buscar leads da API
-  const carregarLeads = async () => {
+  async function carregarLeads(){
     try {
       const resposta = await api.get('/leads');
       setLeads(resposta.data);
@@ -47,7 +47,7 @@ async function checkServer() {
     }
   };
   // Função para mudar o status para Finalizado
-const handleStatus = async (id) => {
+async function handleStatus  (id) {
   try {
     await api.patch(`/leads/${id}`, { status: "Finalizado" });
     toast.info("Status atualizado!");
@@ -61,7 +61,7 @@ const handleStatus = async (id) => {
 };
 
   // Função para excluir um lead
-const handleDelete = async (id) => {
+async function handleDelete(id){
   if (window.confirm("Deseja realmente excluir este lead?")) {
     try {
       await api.delete(`/leads/${id}`);

@@ -1,7 +1,5 @@
-# 🚀 Gerenciador de Leads - Fullstack
-
-Este é um sistema de gerenciamento de leads, ele permite cadastrar, listar, atualizar o status e excluir leads de forma simples e eficiente.
-
+#  LeadTrack - Fullstack CRM
+Sistema completo de gerenciamento de leads com dashboard de estatísticas, autenticação segura e notificações em tempo real.
 ## 🛠️ Tecnologias Utilizadas
 
 ### **Backend**
@@ -9,6 +7,9 @@ Este é um sistema de gerenciamento de leads, ele permite cadastrar, listar, atu
 * **Express**: Framework para criação da API.
 * **SQLite / Knex**: Banco de dados e Query Builder para persistência de dados.
 * **CORS**: Para permitir a comunicação com o Frontend.
+* **JWT (JSON Web Token)**: Autenticação segura de rotas.
+* **Bcrypt**: Criptografia de senhas para segurança máxima.
+* **Dotenv**: Gerenciamento de variáveis de ambiente.
 
 ### **Frontend**
 * **React**: Biblioteca para construção da interface.
@@ -18,9 +19,16 @@ Este é um sistema de gerenciamento de leads, ele permite cadastrar, listar, atu
 *  **Dashboard de Estatísticas**: Cards com contagem automática de leads totais, pendentes e finalizados.
 *  **Conexão Direta WhatsApp**: Clique no número para abrir a conversa instantaneamente com o código do país automático.
 *  **Notificações Toast**: Feedback visual elegante para cada ação (cadastro, atualização e exclusão).
+* **Tailwind CSS v4**: Estilização de alta produtividade.
+
+## Segurança Implementada
+* **Senhas Hash**: Armazenamento seguro no banco de dados.
+* **Tokens de Acesso**: Sessões de usuário validadas via JWT.
+* **Variáveis Protegidas**: Chaves de API e portas configuradas via .env.
 
 ## 📋 Funcionalidades
 - [x] Cadastro de leads (Nome, Email, WhatsApp).
+- [x] Tela de login.
 - [x] Listagem em tempo real.
 - [x] Alteração de status (Pendente para Finalizado).
 - [x] Exclusão de leads com confirmação.
@@ -38,6 +46,7 @@ Siga os passos abaixo para configurar o ambiente local.
 Entre na pasta do servidor e instale as dependências:
 ```bash
 cd backend
+Crie um arquivo .env e defina sua SECRET_KEY e PORT.
 npm install
 node server.js
 ```

@@ -23,4 +23,17 @@ db.schema.hasTable('leads').then((exists) => {
   }
 }).catch(err => console.log("Erro no Knex:", err));
 
+// Criar tabela de usuários se não existir
+db.schema.hasTable('usuarios').then((exists) => {
+  if (!exists) {
+    console.log("→ Criando tabela de usuários...");
+    return db.schema.createTable('usuarios', (table) => {
+      table.increments('id');
+      table.string('nome').notNullable();
+      table.string('email').unique().notNullable(); // Email único para login
+      table.string('senha').notNullable();
+    });
+  }
+}).catch(err => console.log("Erro ao criar tabela de usuários:", err));
+
 module.exports = db;

@@ -3,15 +3,64 @@ const express = require('express');
 const db = require('./db')
 const cors = require('cors');
 const e = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
 const app = express();
 
 // Middlewares
 app.use(cors()); // Permite que o Front-end acesse a API
 app.use(express.json()); // Permite que a API entenda JSON
 
+//Rota login
+app.post('/login', async(req, res)=>{
+    const {email, senha} = req.body;
 
+    try {
+        const user =await db('usuarios').where({email}).first();
+        if(!user){
+            return res.status(401).json({error:'Credenciais inválidas'})
+        }
+
+        //comparando as senha digitada co a o hash do banco.
+        const senhavalida = await bcrypt.compare(senha, user.senha);
+
+        if(!senhavalida){
+            return res.status(401).json({error:'Credenciais inválidas'})
+        }
+
+        //Gerando o token
+        const token = jwt.sign(
+            {id:user.id,email:user.email},
+
+            process.env.SECRET_KEY,{expiresIn:'1d'} //token valido por 1 dia
+        );
+
+        res.json({token, user: {nome: user.nome, email: user.email}});
+    } catch (error) {
+       console.error(error);
+        res.status(500).json({ error: "Erro interno no servidor" }); 
+    }
+});
+
+
+//Rota de registro
+app.post('/register', async(req, res)=>{
+    const {nome , email, senha} = req.body
+
+    try {
+        const senhaCriptografada = await bcrypt.hash(senha, 10)
+
+        await db('usuarios').insert({
+            nome,
+            email,
+            senha: senhaCriptografada
+        });
+        res.status(201).json({message:"Usuário cadastrado com sucesso!"})
+    } catch (error) {
+       res.status(400).json({ error: "Erro ao cadastrar: Email talvez já exista." }); 
+    }
+});
 
 // Rota 1: Listar todos os leads (O Dashboard vai usar essa)
 app.get('/leads', async (req, res) => {

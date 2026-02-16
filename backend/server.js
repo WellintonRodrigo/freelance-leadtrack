@@ -8,7 +8,25 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const app = express();
 
-// Middlewares
+//função porteiro (Middlewares)
+
+function verificarToken(req, res, next){
+    const authHeader =req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Pega apenas o código após "Bearer"
+
+    if(!token){
+        return res.status(401).json({error:'Acesso negado. Faça login para continuar.'});
+    }
+
+    try {
+      // Valida o token usando sua chave mestra
+      const decoded = jwt.verify(token, process.env.SECRET_KEY);
+      req.usuarioId = decoded.id; //Salva o Id
+      next();//pode seguir para a rota
+    } catch (error) {
+        res.status(403).json({error:'Token inválido ou expirado.'});
+    }
+}
 app.use(cors()); // Permite que o Front-end acesse a API
 app.use(express.json()); // Permite que a API entenda JSON
 
@@ -63,18 +81,25 @@ app.post('/register', async(req, res)=>{
 });
 
 // Rota 1: Listar todos os leads (O Dashboard vai usar essa)
-app.get('/leads', async (req, res) => {
+app.get('/leads', verificarToken, async (req, res) => {
 
     try{
-        const leads = await db('leads').select('*');
+
+        if(!req.usuarioId){
+            return res.status(401).json({error: 'ID do usuário não encontrado no token'});
+        }
+        const leads = await db('leads')
+        .where({usuario_id: req.usuarioId})
+        .select('*');
         res.json(leads);
     } catch(error){
-        console.error("Erro ao listar os leads:", error);
+        console.error("ERRO DETALHADO NO SERVIDOR:", error);
+        //console.error("Erro ao listar os leads:", error);
         res.status(500).json({error: "Erro os buscar dados"})
     }
 });
 // Rota 2: Receber novo lead (O Formulário vai usar essa)
-app.post('/leads', async (req, res) => {
+app.post('/leads', verificarToken, async (req, res) => {
     try {
         // 1. Pegamos os dados PRIMEIRO
         const { nome, email, whatsapp } = req.body;
@@ -89,7 +114,8 @@ app.post('/leads', async (req, res) => {
             nome, 
             email, 
             whatsapp, 
-            status: 'Pendente' 
+            status: 'Pendente',
+            usuario_id: req.usuarioId 
         });
 
         res.status(201).json({ id, nome, email, whatsapp, status: 'Pendente' });
@@ -101,12 +127,14 @@ app.post('/leads', async (req, res) => {
 
 // Rota 3: Editar Status do Lead
 
-app.patch('/leads/:id', async (req, res)=>{
+app.patch('/leads/:id', verificarToken, async (req, res)=>{
    try{
     const {id} = req.params;
     const {status} = req.body
 
-    const atualizado = await db('leads').where({id}).update({status});
+    const atualizado = await db('leads')
+    .where({id, usuario_id: req.usuarioId})
+    .update({status});
 
     if(!atualizado){
         return res.status(404).json({error:"Lead não encontrado no banco"});
@@ -119,19 +147,23 @@ app.patch('/leads/:id', async (req, res)=>{
 });
 
 // Rota 4: Deletar Lead
-app.delete('/leads/:id', async (req, res) => {
+app.delete('/leads/:id', verificarToken, async (req, res) => {
 try{
     const { id } = req.params;
 
-    const deletado = await db('leads').where({ id }).delete();
+    const deletado = await db('leads')
+    .where({ id, usuario_id: req.usuarioId })
+    .delete();
 
-        if (!deletado) {
-            return res.status(404).json({ error: "Lead não encontrado" });
+        if (deletado) {
+           return res.json({ message: "Lead removido com sucesso!" });
+        } else{
+           return res.status(404).json({ error: "Lead não encontrado ou sem permissão" });
         }
-        res.status(204).send(); // Sucesso sem conteúdo
+       return res.status(204).send(); // Sucesso sem conteúdo
 
     } catch (error) {
-        res.status(500).json({ error: "Erro ao excluir do banco" });
+       return res.status(500).json({ error: "Erro ao excluir do banco" });
     }
 });
 

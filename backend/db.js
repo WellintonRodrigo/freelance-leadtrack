@@ -10,6 +10,7 @@ const db = knex({
   useNullAsDefault: true
 });
 
+// Verifica se a tabela já existe antes de tentar criar
 db.schema.hasTable('leads').then((exists) => {
   if (!exists) {
     console.log("-> Criando tabela de leads...");
@@ -19,10 +20,14 @@ db.schema.hasTable('leads').then((exists) => {
       table.string('email');
       table.string('whatsapp');
       table.string('status').defaultTo('Pendente');
+      
+      // Esta é a coluna que deu tanto trabalho!
+      table.integer('usuario_id').unsigned().references('id').inTable('usuarios'); 
     });
+  } else {
+    console.log("-> Tabela de leads já existe. Seguindo...");
   }
-}).catch(err => console.log("Erro no Knex:", err));
-
+});
 // Criar tabela de usuários se não existir
 db.schema.hasTable('usuarios').then((exists) => {
   if (!exists) {

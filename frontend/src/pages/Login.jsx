@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import api from './services/api'; // Sua configuração do axios
+import api from '../services/api'; // Sua configuração do axios
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
-export function Login({ onLoginSuccess }) {
+export function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [carregando, setCarregando] = useState(false);
+  const Navigate = useNavigate();
+
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -20,10 +23,12 @@ export function Login({ onLoginSuccess }) {
       localStorage.setItem('user', JSON.stringify(user));
 
       toast.success(`Bem-vindo, ${user.nome}!`);
-      onLoginSuccess(); // Função para liberar o acesso ao Dashboard
+     Navigate('/dashboard'); // Função para liberar o acesso ao Dashboard
     } catch (error) {
         const msgErroLogin = error.response?.data?.error;
         toast.error(`Erro ao fazer login: ${msgErroLogin}`);
+    } finally {
+      setCarregando(false);
     }
   }
 

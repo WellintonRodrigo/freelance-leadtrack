@@ -15,9 +15,9 @@ export function Dashboard() {
     const [filtro, setFiltro] = useState('');
     const [isOnline, setIsOnline] = useState(false);
     const erroNotificado = useRef(false);
-    const [usuario, setUsuario] = useState(null);
     const navigate = useNavigate();
-    
+    const userStorage = localStorage.getItem('user');
+    const usuario = userStorage ? JSON.parse(userStorage) : null;
   
   async function checkServer() {
     try {
@@ -94,19 +94,27 @@ export function Dashboard() {
   );
 
    useEffect(() => {
+    let intervaId;
+
     const fetchLeads = async () => {
       await checkServer();
-      const interval = setInterval(checkServer, 10000);
-      const token = localStorage.getItem('token');
-      const userStorag = localStorage.getItem('user');
-      
-      if (token && userStorag) {
-        setUsuario(JSON.parse(userStorag));
-      }
-    await carregarLeads();
-    return () => clearInterval(interval);
-    };
+      await carregarLeads();
+
+      intervaId = setInterval(()=>{
+        const token = localStorage.getItem('token');
+        if(token){
+          checkServer();
+        }
+      }, 10000);
+ };
     fetchLeads();
+
+     return () => {
+      if(intervaId){
+        clearInterval(intervaId);
+        console.log('Intervalo limpo com sucesso!');
+      }
+    };
   }, []);
 
   // Se o usuário ainda não foi carregado do localStorage, não renderiza nada

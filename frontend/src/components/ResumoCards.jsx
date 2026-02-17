@@ -7,7 +7,7 @@ export function ResumoCards({ leads }) {
   const finalizados = leads.filter(l => l.status === 'Finalizado').length;
 
   return (
-  <div className="grid grid-cols-1 gap-6 md:grid-cols-3 mb-10">
+  <div className="w-full grid grid-cols-1 gap-6 md:grid-cols-3 mb-10">
       <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 shadow-sm">
         <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">Total</p>
         <p className="mt-2 text-3xl font-bold text-white">{totalLeads}</p>

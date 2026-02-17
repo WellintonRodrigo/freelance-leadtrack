@@ -2,7 +2,7 @@ import React from 'react';
 
 export function TabelaLeads({ leads, handleStatus, handleDelete }) {
   return (
-   <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40">
+   <div className="w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40">
       <table className="w-full text-left border-collapse">
         <thead className="bg-slate-800/50">
           <tr>
@@ -14,7 +14,7 @@ export function TabelaLeads({ leads, handleStatus, handleDelete }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
-          {(!leads||length.leads=== 0) ?(
+          {(leads||length.leads=== 0) ?(
           <tr>
             <td colSpan='5' className='p-10 text-center text-slate-500 italic'>
               Nenhum lead encontrado.

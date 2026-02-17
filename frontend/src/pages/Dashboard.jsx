@@ -16,7 +16,7 @@ export function Dashboard() {
     const [filtro, setFiltro] = useState('');
     const erroNotificado = useRef(false);
     //const navigate = useNavigate();
-    const [isOpen, setOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const userStorage = localStorage.getItem('user');
     const usuario = userStorage ? JSON.parse(userStorage) : null;
   
@@ -121,30 +121,32 @@ if (!usuario) {
   return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Carregando painel...</div>;
 }
     return (
-    <div className="flex min-h-screen bg-slate-950">
-      {/* 1. O Menu fixo na lateral esquerda */}
-      <Sidebar isOpen={isOpen} setIsOpen={setOpen}/>
+    <div className="flex min-h-screen bg-slate-950 w-full overflow-x-hidden">
+    {/* 1. Sidebar - Ela ocupa o espaço dela naturalmente */}
+    <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      {/* 2. O conteúdo principal com margem à esquerda (ml-64) */}
-      <main className={`"flex-1 transition-all duration-300 ${isOpen? 'ml-64': 'ml-20'} p-8`}>
-        <div className="max-w-6xl mx-auto">
-          {/* Aqui entram os seus componentes que já funcionam */}
-          <ResumoCards leads={leads} /> {/* Seus cards de Total/Pendentes */}
+    {/* 2. Área de Conteúdo - Ela cresce para ocupar TODO o resto do espaço */}
+    <div className={`flex-1 flex flex-col transition-all duration-300 ${isOpen ? 'pl-64' : 'pl-20'}`}>
+      <main className="p-8 w-full flex-grow">
+        {/* Este container 'max-w-none' garante que nada segure a largura */}
+        <div className="w-full max-w-none"> 
+          <ResumoCards leads={leads} />
           
-          <div className="mt-8 space-y-6">
-            <FormularioLeads aoCadastrar={carregarLeads} /> {/* */}
+          <div className="mt-8 space-y-6 w-full">
+            <FormularioLeads aoCadastrar={carregarLeads} />
             
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
-              <Busca filtro={filtro} setFiltro={setFiltro} /> {/* Seu input de busca */}
+            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 shadow-xl w-full">
+              <Busca filtro={filtro} setFiltro={setFiltro} />
               <TabelaLeads 
                 leads={leadsFiltrados} 
                 handleStatus={handleStatus} 
                 handleDelete={handleDelete} 
-              /> {/* */}
+              />
             </div>
           </div>
         </div>
       </main>
     </div>
+  </div>
   );
 }

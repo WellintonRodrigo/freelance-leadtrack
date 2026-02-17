@@ -14,7 +14,14 @@ export function TabelaLeads({ leads, handleStatus, handleDelete }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
-          {leads.map(lead => (
+          {(leads||length.leads=== 0) ?(
+          <tr>
+            <td colSpan='5' className='p-10 text-center text-slate-500 italic'>
+              Nenhum lead encontrado.
+            </td>
+          </tr>
+          ):(
+          leads.map((lead) => (
             <tr key={lead.id} className="hover:bg-slate-800/30 transition-colors">
               <td className="p-4 text-slate-300">{lead.nome}</td>
               <td className="p-4 text-slate-400 text-sm">{lead.email}</td>
@@ -35,7 +42,8 @@ export function TabelaLeads({ leads, handleStatus, handleDelete }) {
                 <button onClick={() => handleDelete(lead.id)} className="p-2 hover:bg-red-500/20 rounded-lg text-red-500 transition-all cursor-pointer">🗑️</button>
               </td>
             </tr>
-          ))}
+          ))
+         )}
       </tbody>
     </table>
     </div>

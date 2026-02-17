@@ -3,30 +3,29 @@ import { FormularioLeads } from '../components/FormularioLeads';
 import { Busca } from '../components/Busca';
 import { TabelaLeads } from '../components/TabelaLeads';
 import { ResumoCards } from '../components/ResumoCards';
+import { Sidebar } from '../components/Sidebar';
 import api from './../services/api';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 
 export function Dashboard() {
 
    const [leads, setLeads] = useState([]);
     const [filtro, setFiltro] = useState('');
-    const [isOnline, setIsOnline] = useState(false);
     const erroNotificado = useRef(false);
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
+    const [isOpen, setOpen] = useState(false);
     const userStorage = localStorage.getItem('user');
     const usuario = userStorage ? JSON.parse(userStorage) : null;
   
   async function checkServer() {
     try {
       await api.get('/leads');
-      setIsOnline(true);
       erroNotificado.current = false;
     } catch (error) {
       const msgservererro = error.response?.data?.error;
-      setIsOnline(false);
       if(!erroNotificado.current){
       toast.error(`Erro ao conectar ao servidor: ${msgservererro} `, 
         { toastId:'server-offline', autoClose: 5000 });
@@ -79,12 +78,12 @@ export function Dashboard() {
     }
     };
 
-     function handleLogout(){
+     /*function handleLogout(){
     localStorage.clear();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/Login');
-  }
+  }*/
 
   //Lógica de Filtro: Criamos uma nova lista baseada no que foi digitado
 
@@ -121,49 +120,31 @@ export function Dashboard() {
 if (!usuario) {
   return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Carregando painel...</div>;
 }
+    return (
+    <div className="flex min-h-screen bg-slate-950">
+      {/* 1. O Menu fixo na lateral esquerda */}
+      <Sidebar isOpen={isOpen} setIsOpen={setOpen}/>
 
-  return (
-    <div className='min-h-screen bg-slate-950 p8 text-slate-100'>
-      <div className='mx-auto max-w-6xl'>
-        <header className='mb-10 flex items-center justify-between'> 
-        <div className="flex items-center gap-4">
-          {/* Avatar com a inicial do nome */}
-          <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/20">
-            {usuario?.nome?.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">Olá, {usuario?.nome}!</h1>
-            <p className="text-slate-500 text-xs">Bem-vindo ao LeadTrack</p>
+      {/* 2. O conteúdo principal com margem à esquerda (ml-64) */}
+      <main className={`"flex-1 transition-all duration-300 ${isOpen? 'ml-64': 'ml-20'} p-8`}>
+        <div className="max-w-6xl mx-auto">
+          {/* Aqui entram os seus componentes que já funcionam */}
+          <ResumoCards leads={leads} /> {/* Seus cards de Total/Pendentes */}
+          
+          <div className="mt-8 space-y-6">
+            <FormularioLeads aoCadastrar={carregarLeads} /> {/* */}
+            
+            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
+              <Busca filtro={filtro} setFiltro={setFiltro} /> {/* Seu input de busca */}
+              <TabelaLeads 
+                leads={leadsFiltrados} 
+                handleStatus={handleStatus} 
+                handleDelete={handleDelete} 
+              /> {/* */}
+            </div>
           </div>
         </div>
-
-
-      <h1 className="text-4xl font-bold text-green-500 uppercase">
-        Dashboard de Leads
-        </h1>
-        <span className={`rounded-full bg-bg-green-500 px3 py-1 text-sm font-medium text-green-400 border transition-all ${isOnline ? "bg-green-500/10 text-green-400 border-green-500/20" 
-  : "bg-red-500/10 text-red-400 border-red-500/20 animate-pulse"
-}`}>
-          Sistema {isOnline? 'Online ' : 'Offline'}
-        </span>
-
-        <button  onClick={handleLogout} className="bg-slate-800 hover:bg-red-500/20 hover:text-red-400 px-4 py-2 rounded-lg transition-all text-sm font-medium cursor-pointer"> Sair</button>
-
-      </header>
-     <ResumoCards leads={leads} />
-
-     <FormularioLeads carregarLeads={carregarLeads} />
-
-      <Busca filtro={filtro} setFiltro={setFiltro} />
-
-     <TabelaLeads 
-      leads={leadsFiltrados}
-      handleStatus={handleStatus}
-      handleDelete={handleDelete}
-      />
-
-     <ToastContainer position='bottom-right' theme='dark' />
-    </div>
+      </main>
     </div>
   );
 }

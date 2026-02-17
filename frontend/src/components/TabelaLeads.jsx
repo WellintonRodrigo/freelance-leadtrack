@@ -14,7 +14,7 @@ export function TabelaLeads({ leads, handleStatus, handleDelete }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
-          {(leads||length.leads=== 0) ?(
+          {(!leads||length.leads=== 0) ?(
           <tr>
             <td colSpan='5' className='p-10 text-center text-slate-500 italic'>
               Nenhum lead encontrado.

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import api from '../services/api'; // Sua configuração do axios
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -74,7 +75,15 @@ export function Login() {
               "Entrar"
             )}
           </button>
-        </form>
+        <div className="mt-4 text-center">
+        <p className="text-slate-400 text-sm">
+    Ainda não tem uma conta?{' '}
+    <Link to="/register" className="text-blue-500 hover:underline">
+      Cadastre-se aqui
+    </Link>
+    </p>
+      </div>
+     </form>
       </div>
     </div>
   );

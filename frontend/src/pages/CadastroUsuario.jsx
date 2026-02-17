@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api'; // Certifique-se de que o caminho está correto
+import api from '../services/api'; 
 import { toast } from 'react-toastify';
 
 export function CadastroUsuario() {
@@ -8,17 +8,20 @@ export function CadastroUsuario() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const navigate = useNavigate();
+  const [carregando, setCarregando] = useState(false);
 
   async function handleRegister(e) {
     e.preventDefault();
     try {
       // Chamada para a rota que já criamos no backend
       await api.post('/register', { nome, email, senha });
-      
+      setCarregando(true);
       toast.success('Usuário criado com sucesso! Faça login.');
-      navigate('/login'); // Redireciona para o login após cadastrar
+      navigate('/'); // Redireciona para o login após cadastrar
     } catch (err) {
       toast.error(err.response?.data?.error || 'Erro ao cadastrar usuário');
+    }finally{
+      setCarregando(false);
     }
   }
 
@@ -54,8 +57,10 @@ export function CadastroUsuario() {
           required
         />
 
-        <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 p-2.5 rounded font-bold transition">
-          Cadastrar
+        <button type="submit" disabled={carregando} className="w-full bg-blue-600 hover:bg-blue-700 p-2.5 rounded font-bold transition">
+          
+          {carregando? 'Cadastrando...' : 'Criar conta'}
+       
         </button>
 
         <p className="mt-4 text-center text-sm text-slate-400">

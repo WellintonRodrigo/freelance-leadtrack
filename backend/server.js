@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const app = express();
+import { prisma } from './lib/prisma';
 
 //função porteiro (Middlewares)
 
@@ -83,46 +84,23 @@ app.post('/register', async(req, res)=>{
 // Rota 1: Listar todos os leads (O Dashboard vai usar essa)
 app.get('/leads', verificarToken, async (req, res) => {
 
-    try{
-
-        if(!req.usuarioId){
-            return res.status(401).json({error: 'ID do usuário não encontrado no token'});
+   const { nome, email, whatsapp, origem, notas } = req.body;
+    
+   try {
+    const novoLeads = await prisma.lead.create({
+        data:{ 
+        nome,
+        email,
+        whatsapp,
+        origem: origem || 'Site',
+        notas: notas || '',
+        status: 'pendente'
         }
-        const leads = await db('leads')
-        .where({usuario_id: req.usuarioId})
-        .select('*');
-        res.json(leads);
-    } catch(error){
-        console.error("ERRO DETALHADO NO SERVIDOR:", error);
-        //console.error("Erro ao listar os leads:", error);
-        res.status(500).json({error: "Erro os buscar dados"})
-    }
-});
-// Rota 2: Receber novo lead (O Formulário vai usar essa)
-app.post('/leads', verificarToken, async (req, res) => {
-    try {
-        // 1. Pegamos os dados PRIMEIRO
-        const { nome, email, whatsapp } = req.body;
-
-        // 2. Verificamos se eles existem (evita erros de undefined)
-        if (!nome || !email) {
-            return res.status(400).json({ error: "Nome e Email são obrigatórios" });
-        }
-
-        // 3. Salvamos no banco usando o db.
-        const [id] = await db('leads').insert({ 
-            nome, 
-            email, 
-            whatsapp, 
-            status: 'Pendente',
-            usuario_id: req.usuarioId 
-        });
-
-        res.status(201).json({ id, nome, email, whatsapp, status: 'Pendente' });
-    } catch (error) {
-        console.error("Erro no servidor:", error);
-        res.status(500).json({ error: "Erro ao cadastrar no banco" });
-    }
+    });
+    res.status(201).json(novoLeads);
+   } catch (error) {
+    res.status(400).json({error:'Erro ao cadastrar: E-mail já existe ou dados inválidos.'});
+   }    
 });
 
 // Rota 3: Editar Status do Lead
@@ -132,9 +110,13 @@ app.patch('/leads/:id', verificarToken, async (req, res)=>{
     const {id} = req.params;
     const {status} = req.body
 
-    const atualizado = await db('leads')
-    .where({id, usuario_id: req.usuarioId})
-    .update({status});
+    const atualizado = await prisma.lead.update({ 
+        where:{
+            id: Number(id),
+            usuarioId: req.usuarioId
+        },
+        data:{status}
+    });
 
     if(!atualizado){
         return res.status(404).json({error:"Lead não encontrado no banco"});
@@ -151,9 +133,12 @@ app.delete('/leads/:id', verificarToken, async (req, res) => {
 try{
     const { id } = req.params;
 
-    const deletado = await db('leads')
-    .where({ id, usuario_id: req.usuarioId })
-    .delete();
+    const deletado = await prisma.lead.deleteMany({
+        where:{
+            id: Number(id),
+            usuarioId: req.usuarioId
+        }
+    })
 
         if (deletado) {
            return res.json({ message: "Lead removido com sucesso!" });

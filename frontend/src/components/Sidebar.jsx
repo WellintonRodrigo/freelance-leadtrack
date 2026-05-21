@@ -14,7 +14,7 @@ export function Sidebar({ isOpen, setIsOpen }) {
   useEffect(() => {
     const checkServer = async()=>{
         try {
-            await api.get('/leads');
+            await api.get('/healthcheck');
             setIsOnline(true);
         } catch (err) {
             const msgservererro = err.response?.data?.error;

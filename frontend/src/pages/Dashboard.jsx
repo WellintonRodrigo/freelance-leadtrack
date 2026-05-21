@@ -22,7 +22,7 @@ export function Dashboard() {
   
   async function checkServer() {
     try {
-      await api.get('/leads');
+      await api.get('/healthcheck');
       erroNotificado.current = false;
     } catch (error) {
       const msgservererro = error.response?.data?.error;
@@ -78,13 +78,6 @@ export function Dashboard() {
     }
     };
 
-     /*function handleLogout(){
-    localStorage.clear();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/Login');
-  }*/
-
   //Lógica de Filtro: Criamos uma nova lista baseada no que foi digitado
 
   const leadsFiltrados = leads.filter(lead => 
@@ -93,6 +86,7 @@ export function Dashboard() {
   );
 
    useEffect(() => {
+    
     let intervaId;
 
     const fetchLeads = async () => {
@@ -114,7 +108,7 @@ export function Dashboard() {
         console.log('Intervalo limpo com sucesso!');
       }
     };
-  }, []);
+  }, [filtro, leads]);
 
   // Se o usuário ainda não foi carregado do localStorage, não renderiza nada
 if (!usuario) {
